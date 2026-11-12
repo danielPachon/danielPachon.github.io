@@ -1,0 +1,161 @@
+---
+import { Image } from 'astro:assets'
+import portrait from '../assets/daniel.jpg'
+import boardEn from '../assets/task-manager-light.png'
+import boardEs from '../assets/task-manager-dark-es.png'
+import { content, LINKS, type Lang } from '../i18n/content'
+import Header from './Header.astro'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const t = content[lang]
+const board = lang === 'es' ? boardEs : boardEn
+const year = new Date().getFullYear()
+---
+
+<Header lang={lang} />
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__text">
+      <p class="hero__name">Daniel Pachón</p>
+      <p class="hero__role">{t.hero.role}</p>
+      <h1 id="hero-title">{t.hero.title}</h1>
+      <p class="hero__intro">{t.hero.intro}</p>
+      <div class="hero__actions">
+        <a class="button button--primary" href="#project">{t.hero.ctaProject}</a>
+        <a class="button button--secondary" href={LINKS.cv} download>{t.hero.ctaCv}</a>
+      </div>
+      <ul class="hero__facts">
+        <li><span class="status-dot" aria-hidden="true"></span>{t.hero.availability}</li>
+        <li>{t.hero.location}</li>
+        <li>{t.hero.english}</li>
+      </ul>
+    </div>
+    <figure class="hero__photo">
+      <Image src={portrait} alt={t.hero.photoAlt} width={460} height={460} loading="eager" fetchpriority="high" />
+      <span class="hero__mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    </figure>
+  </section>
+
+  <section id="project" class="section project" aria-labelledby="project-title">
+    <h2 class="section__title" id="project-title">{t.project.heading}</h2>
+    <div class="project__layout">
+      <div class="project__text">
+        <h3>{t.project.name}</h3>
+        <p class="project__tagline">{t.project.tagline}</p>
+        <p>{t.project.body}</p>
+        <ul class="project__highlights">
+          {t.project.highlights.map((h) => <li>{h}</li>)}
+        </ul>
+        <p class="project__stack">
+          <span class="visually-hidden">{t.project.stackLabel}: </span>
+          {t.project.stack.map((s) => <span class="tag">{s}</span>)}
+        </p>
+        <div class="project__links">
+          <a class="button button--primary" href={LINKS.taskManagerDemo}>{t.project.demo}</a>
+          <a class="text-link" href={LINKS.taskManagerWeb}>{t.project.codeWeb}</a>
+          <a class="text-link" href={LINKS.taskManagerApi}>{t.project.codeApi}</a>
+          <a class="text-link" href={LINKS.taskManagerDocs}>{t.project.docs}</a>
+        </div>
+        <p class="project__note">{t.project.note}</p>
+      </div>
+      <a class="project__shot" href={LINKS.taskManagerDemo} tabindex="-1" aria-hidden="true">
+        <Image src={board} alt="" widths={[640, 960, 1280]} sizes="(max-width: 900px) 100vw, 640px" />
+      </a>
+    </div>
+    <p class="project__next">{t.project.next}</p>
+  </section>
+
+  <section class="section strengths" aria-labelledby="strengths-title">
+    <h2 class="section__title" id="strengths-title">{t.strengths.heading}</h2>
+    <p class="section__intro">{t.strengths.intro}</p>
+    <div class="strengths__grid">
+      {
+        t.strengths.items.map((item, i) => (
+          <div class={`strength strength--${i}`}>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section id="experience" class="section" aria-labelledby="experience-title">
+    <h2 class="section__title" id="experience-title">{t.experience.heading}</h2>
+    {
+      [
+        { label: t.experience.techGroup, roles: t.experience.tech },
+        { label: t.experience.businessGroup, roles: t.experience.business },
+      ].map((group) => (
+        <div class="timeline-group">
+          <h3 class="timeline-group__title">{group.label}</h3>
+          <ol class="timeline">
+            {group.roles.map((role) => (
+              <li class="timeline__item">
+                <p class="timeline__period">{role.period}</p>
+                <div>
+                  <h4>
+                    {role.title} <span class="timeline__org">{role.org}</span>
+                  </h4>
+                  <p>{role.summary}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))
+    }
+  </section>
+
+  <section class="section" aria-labelledby="education-title">
+    <h2 class="section__title" id="education-title">{t.education.heading}</h2>
+    <ol class="education">
+      {
+        t.education.items.map((e) => (
+          <li>
+            <p class="education__title">{e.title}</p>
+            <p class="education__meta">
+              {e.org}, {e.period}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section id="skills" class="section" aria-labelledby="skills-title">
+    <h2 class="section__title" id="skills-title">{t.skills.heading}</h2>
+    <dl class="skills">
+      {
+        t.skills.groups.map((g) => (
+          <div class="skills__group">
+            <dt>{g.name}</dt>
+            <dd>{g.items.join(', ')}</dd>
+          </div>
+        ))
+      }
+      <div class="skills__group">
+        <dt>{t.skills.spokenLabel}</dt>
+        <dd>{t.skills.spoken}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section id="contact" class="section contact" aria-labelledby="contact-title">
+    <h2 id="contact-title">{t.contact.heading}</h2>
+    <p>{t.contact.body}</p>
+    <div class="contact__actions">
+      <a class="button button--primary" href={LINKS.linkedin}>{t.contact.linkedin}</a>
+      <a class="button button--secondary" href={LINKS.cv} download>{t.contact.cv}</a>
+      <a class="text-link" href={LINKS.github}>{t.contact.github}</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>© {year} Daniel Pachón. {t.footer.built} <a href="https://github.com/danielPachon/danielpachon.github.io">{t.footer.source}</a>.</p>
+</footer>
