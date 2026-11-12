@@ -1,0 +1,78 @@
+---
+import '@fontsource-variable/bricolage-grotesque'
+import '@fontsource/atkinson-hyperlegible/400.css'
+import '@fontsource/atkinson-hyperlegible/700.css'
+import '../styles/global.css'
+import { content, pathFor, type Lang } from '../i18n/content'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = content[lang]
+const site = Astro.site!
+const canonical = new URL(pathFor(lang), site)
+const ogImage = new URL('/og.png', site)
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.meta.title}</title>
+    <meta name="description" content={t.meta.description} />
+    <meta name="author" content="Daniel Pachón" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={new URL('/', site)} />
+    <link rel="alternate" hreflang="es" href={new URL('/es/', site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/', site)} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={t.meta.title} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_CO'} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#f3f5f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f141b" media="(prefers-color-scheme: dark)" />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: 'Daniel Steven Rodríguez Pachón',
+      alternateName: 'Daniel Pachón',
+      jobTitle: 'Software Engineer',
+      url: site.toString(),
+      address: { '@type': 'PostalAddress', addressLocality: 'Calarcá', addressRegion: 'Quindío', addressCountry: 'CO' },
+      alumniOf: [{ '@type': 'CollegeOrUniversity', name: 'Universidad EAM' }, { '@type': 'EducationalOrganization', name: 'SENA' }],
+      knowsLanguage: ['es', 'en'],
+      sameAs: ['https://github.com/danielPachon', 'https://www.linkedin.com/in/daniel-steven-rodr%C3%ADguez-pachon-4a0690159/'],
+    })} />
+
+    <script is:inline>
+      // Apply the saved theme before first paint to avoid a flash
+      try {
+        var theme = localStorage.getItem('dp.theme')
+        if (!theme) theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.dataset.theme = theme
+      } catch (e) {}
+    </script>
+    <script is:inline define:vars={{ lang }}>
+      // First visit to the English page from a Spanish-speaking browser: offer Spanish
+      try {
+        if (lang === 'en' && !localStorage.getItem('dp.lang') && (navigator.language || '').toLowerCase().indexOf('es') === 0) {
+          location.replace('/es/' + location.hash)
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
