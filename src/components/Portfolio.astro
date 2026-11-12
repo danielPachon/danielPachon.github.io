@@ -5,14 +5,18 @@ import boardEn from '../assets/task-manager-light.png'
 import boardEs from '../assets/task-manager-dark-es.png'
 import { content, LINKS, type Lang } from '../i18n/content'
 import Header from './Header.astro'
+import MagnetLink from './MagnetLink'
+import StrengthCards from './StrengthCards'
 
 interface Props {
   lang: Lang
 }
 const { lang } = Astro.props
 const t = content[lang]
-const board = lang === 'es' ? boardEs : boardEn
+// The page's own language is shown first; scrolling reveals the other language and theme
+const [firstShot, secondShot] = lang === 'es' ? [boardEs, boardEn] : [boardEn, boardEs]
 const year = new Date().getFullYear()
+const shotSizes = '(max-width: 960px) 100vw, 620px'
 ---
 
 <Header lang={lang} />
@@ -25,8 +29,8 @@ const year = new Date().getFullYear()
       <h1 id="hero-title">{t.hero.title}</h1>
       <p class="hero__intro">{t.hero.intro}</p>
       <div class="hero__actions">
-        <a class="button button--primary" href="#project">{t.hero.ctaProject}</a>
-        <a class="button button--secondary" href={LINKS.cv} download>{t.hero.ctaCv}</a>
+        <MagnetLink client:idle href="#project">{t.hero.ctaProject}</MagnetLink>
+        <MagnetLink client:idle href={LINKS.cv} variant="secondary" download>{t.hero.ctaCv}</MagnetLink>
       </div>
       <ul class="hero__facts">
         <li><span class="status-dot" aria-hidden="true"></span>{t.hero.availability}</li>
@@ -35,7 +39,9 @@ const year = new Date().getFullYear()
       </ul>
     </div>
     <figure class="hero__photo">
-      <Image src={portrait} alt={t.hero.photoAlt} width={460} height={460} loading="eager" fetchpriority="high" />
+      <span class="hero__frame">
+        <Image src={portrait} alt={t.hero.photoAlt} width={460} height={460} loading="eager" fetchpriority="high" />
+      </span>
       <span class="hero__mark" aria-hidden="true"><i></i><i></i><i></i></span>
     </figure>
   </section>
@@ -62,9 +68,26 @@ const year = new Date().getFullYear()
         </div>
         <p class="project__note">{t.project.note}</p>
       </div>
-      <a class="project__shot" href={LINKS.taskManagerDemo} tabindex="-1" aria-hidden="true">
-        <Image src={board} alt="" widths={[640, 960, 1280]} sizes="(max-width: 900px) 100vw, 640px" />
-      </a>
+
+      <figure class="showcase">
+        <a class="showcase__frame" href={LINKS.taskManagerDemo} tabindex="-1">
+          <Image class="showcase__shot" src={firstShot} alt={t.project.imageAlt} widths={[640, 960, 1280]} sizes={shotSizes} />
+          <Image
+            class="showcase__shot showcase__shot--second"
+            src={secondShot}
+            alt={t.project.otherImageAlt}
+            widths={[640, 960, 1280]}
+            sizes={shotSizes}
+          />
+        </a>
+        <figcaption class="showcase__caption">
+          <span class="showcase__labels">
+            <span class="showcase__label showcase__label--first">{t.project.showcaseFirst}</span>
+            <span class="showcase__label showcase__label--second" aria-hidden="true">{t.project.showcaseSecond}</span>
+          </span>
+          <span class="showcase__track" aria-hidden="true"><span class="showcase__progress"></span></span>
+        </figcaption>
+      </figure>
     </div>
     <p class="project__next">{t.project.next}</p>
   </section>
@@ -72,16 +95,7 @@ const year = new Date().getFullYear()
   <section class="section strengths" aria-labelledby="strengths-title">
     <h2 class="section__title" id="strengths-title">{t.strengths.heading}</h2>
     <p class="section__intro">{t.strengths.intro}</p>
-    <div class="strengths__grid">
-      {
-        t.strengths.items.map((item, i) => (
-          <div class={`strength strength--${i}`}>
-            <h3>{item.title}</h3>
-            <p>{item.body}</p>
-          </div>
-        ))
-      }
-    </div>
+    <StrengthCards client:visible items={t.strengths.items} />
   </section>
 
   <section id="experience" class="section" aria-labelledby="experience-title">
@@ -93,19 +107,25 @@ const year = new Date().getFullYear()
       ].map((group) => (
         <div class="timeline-group">
           <h3 class="timeline-group__title">{group.label}</h3>
-          <ol class="timeline">
+          <div class="timeline">
+            <span class="timeline__rail" aria-hidden="true">
+              <span class="timeline__progress" />
+            </span>
+            <ol class="timeline__list">
             {group.roles.map((role) => (
               <li class="timeline__item">
                 <p class="timeline__period">{role.period}</p>
-                <div>
+                <div class="timeline__body">
                   <h4>
-                    {role.title} <span class="timeline__org">{role.org}</span>
+                    {role.title}
+                    <span class="timeline__org">{role.org}</span>
                   </h4>
                   <p>{role.summary}</p>
                 </div>
               </li>
             ))}
-          </ol>
+            </ol>
+          </div>
         </div>
       ))
     }
@@ -119,7 +139,7 @@ const year = new Date().getFullYear()
           <li>
             <p class="education__title">{e.title}</p>
             <p class="education__meta">
-              {e.org}, {e.period}
+              {e.org}, <span class="nums">{e.period}</span>
             </p>
           </li>
         ))
@@ -149,8 +169,8 @@ const year = new Date().getFullYear()
     <h2 id="contact-title">{t.contact.heading}</h2>
     <p>{t.contact.body}</p>
     <div class="contact__actions">
-      <a class="button button--primary" href={LINKS.linkedin}>{t.contact.linkedin}</a>
-      <a class="button button--secondary" href={LINKS.cv} download>{t.contact.cv}</a>
+      <MagnetLink client:visible href={LINKS.linkedin}>{t.contact.linkedin}</MagnetLink>
+      <MagnetLink client:visible href={LINKS.cv} variant="secondary" download>{t.contact.cv}</MagnetLink>
       <a class="text-link" href={LINKS.github}>{t.contact.github}</a>
     </div>
   </section>
@@ -159,3 +179,7 @@ const year = new Date().getFullYear()
 <footer class="site-footer">
   <p>© {year} Daniel Pachón. {t.footer.built} <a href="https://github.com/danielPachon/danielpachon.github.io">{t.footer.source}</a>.</p>
 </footer>
+
+<script>
+  import '../scripts/motion'
+</script>

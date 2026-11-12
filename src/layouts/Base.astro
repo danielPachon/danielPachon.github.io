@@ -2,7 +2,9 @@
 import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource/atkinson-hyperlegible/400.css'
 import '@fontsource/atkinson-hyperlegible/700.css'
+import 'lenis/dist/lenis.css'
 import '../styles/global.css'
+import boldFont from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url'
 import { content, pathFor, type Lang } from '../i18n/content'
 
 interface Props {
@@ -62,7 +64,15 @@ const ogImage = new URL('/og.png', site)
         if (!theme) theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
         document.documentElement.dataset.theme = theme
       } catch (e) {}
+      // Hide the hero until the one-time intro runs (only with motion allowed, once per session)
+      try {
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('dp.intro-seen')) {
+          document.documentElement.classList.add('intro-pending')
+          setTimeout(function () { document.documentElement.classList.remove('intro-pending') }, 3000)
+        }
+      } catch (e) {}
     </script>
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={boldFont} />
     <script is:inline define:vars={{ lang }}>
       // First visit to the English page from a Spanish-speaking browser: offer Spanish
       try {
