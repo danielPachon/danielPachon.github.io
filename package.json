@@ -1,0 +1,26 @@
+{
+  "name": "danielpachon.github.io",
+  "version": "1.0.0",
+  "description": "Personal portfolio of Daniel Pachón, software engineer (full stack, data and AI)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "author": "Daniel Pachón",
+  "license": "MIT",
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
+    "astro": "^7.4.11",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "typescript": "^6.0.3"
+  },
+  "type": "module",
+  "private": true
+}
