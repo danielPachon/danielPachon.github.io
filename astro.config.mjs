@@ -1,4 +1,3 @@
-import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
 import { defineConfig } from 'astro/config'
 
@@ -10,7 +9,6 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
   integrations: [
-    react(),
     sitemap({
       i18n: { defaultLocale: 'en', locales: { en: 'en-US', es: 'es-CO' } },
     }),

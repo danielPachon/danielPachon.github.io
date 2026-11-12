@@ -1,27 +1,34 @@
 export type Lang = 'en' | 'es'
+export type LineId = 'software' | 'data' | 'sales'
 
 export const LINKS = {
   linkedin: 'https://www.linkedin.com/in/daniel-steven-rodr%C3%ADguez-pachon-4a0690159/',
   github: 'https://github.com/danielPachon',
   cv: '/Daniel-Pachon-CV.pdf',
+  source: 'https://github.com/danielPachon/danielpachon.github.io',
   taskManagerDemo: 'https://task-manager-web-cn5q.onrender.com',
   taskManagerWeb: 'https://github.com/danielPachon/task-manager-web',
   taskManagerApi: 'https://github.com/danielPachon/task-manager-api',
   taskManagerDocs: 'https://task-manager-api-0uhq.onrender.com/docs',
 }
 
-interface Role {
+/** A stop on a career line. `planned` stops are drawn as a route under construction. */
+type Station = {
+  kind: 'job' | 'study' | 'planned'
   title: string
   org: string
   period: string
-  summary: string
+  detail?: string
 }
 
-interface Study {
-  title: string
-  org: string
-  period: string
+type Line = {
+  id: LineId
+  name: string
+  stations: Station[]
 }
+
+/** Keeps every station typed as a Station, so optional fields read cleanly in templates. */
+const defineNetwork = (lines: Line[]) => lines
 
 const en = {
   meta: {
@@ -32,8 +39,8 @@ const en = {
   nav: {
     skip: 'Skip to content',
     project: 'Project',
-    experience: 'Experience',
-    skills: 'Skills',
+    route: 'Route',
+    stack: 'Stack',
     contact: 'Contact',
     language: 'Language',
     theme: 'Theme',
@@ -41,157 +48,138 @@ const en = {
     dark: 'Dark',
     menu: 'Sections',
   },
+  lines: { software: 'Software', data: 'Data', sales: 'Sales' } satisfies Record<LineId, string>,
   hero: {
-    role: 'Software Engineer · Full Stack · Data & AI',
-    title: 'I build web products end to end, with the people who use them in mind.',
-    intro:
-      "I'm a software engineer from Colombia working with Java, Python and TypeScript, and I'm completing a specialization in data analytics. Years in sales and customer retention taught me to build for real users and measurable results.",
-    availability: 'Open to remote roles and opportunities in Spain',
-    location: 'Calarcá, Colombia',
-    english: 'English C1',
-    ctaProject: 'See my work',
+    role: 'Software engineer, full stack web, data and AI',
+    pitch: 'I build web products end to end, and I know the customer side from years in sales.',
+    terminus: 'Remote or Spain',
+    terminusLabel: 'Heading to',
+    facts: ['Calarcá, Colombia', 'English C1'],
+    ctaProject: 'See the project',
+    ctaLinkedin: 'LinkedIn',
     ctaCv: 'Download CV',
     photoAlt: 'Portrait of Daniel Pachón in a dark suit',
+    mapLabel: 'Career map: the Software, Data and Sales lines meet at Daniel Pachón and continue to remote work or Spain.',
   },
   project: {
-    heading: 'Featured project',
-    name: 'Task Manager',
+    heading: 'Task Manager',
     tagline: 'A full stack Kanban app, from database to deployment.',
-    body: 'A task board where people sign up, capture work and drag it from to do to done. I designed and built both sides: a REST API with authentication and a React interface, each with its own tests, CI pipeline and live deployment.',
-    highlights: [
-      'REST API in Node.js and TypeScript with JWT authentication, ownership rules, filtering, sorting and pagination over PostgreSQL',
-      'React interface with drag and drop, optimistic updates, English and Spanish, and light and dark themes',
-      '45 automated tests across the API (against a real database) and the interface, run by GitHub Actions on every push',
-      'Dockerized API and static frontend on Render, deployed from Blueprints (infrastructure as code), with a Neon PostgreSQL database',
+    facts: [
+      'REST API in Node.js and TypeScript with JWT auth over PostgreSQL',
+      'React board with drag and drop, English and Spanish, light and dark',
+      '45 automated tests, CI on GitHub Actions, Docker, deployed on Render and Neon',
     ],
-    stackLabel: 'Built with',
-    stack: ['React', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Docker', 'GitHub Actions'],
     demo: 'Open live demo',
     codeWeb: 'Frontend code',
     codeApi: 'API code',
     docs: 'API docs',
-    imageAlt: 'Task Manager board with tasks in To do, In progress and Done columns',
-    otherImageAlt: 'The same board in Spanish with the dark theme',
-    showcaseFirst: 'English, light theme',
-    showcaseSecond: 'Spanish, dark theme',
-    note: 'Hosted on a free tier: the first request can take up to a minute while the server wakes up.',
-    next: 'Next on my roadmap: a telecom churn prediction model served through an API, and an AI assistant that answers from internal documents.',
+    imageAltLight: 'Task Manager board in English with the light theme, tasks in To do, In progress and Done',
+    imageAltDark: 'Task Manager board in Spanish with the dark theme',
+    note: 'Free hosting: the first load can take up to a minute.',
   },
-  strengths: {
-    heading: 'Where engineering meets business',
-    intro: 'Three disciplines I bring to a team, each backed by work I have done.',
-    items: [
-      {
-        title: 'Software engineering',
-        body: 'Full stack web applications and RESTful APIs with React, Node.js, Spring Boot and Django. I care about clear architecture, automated tests and CI/CD.',
-      },
-      {
-        title: 'Data analytics',
-        body: 'Specialization in data analytics at Universidad EAM. SQL, Python and Power BI to turn data into decisions, with a focus on customer behaviour.',
-      },
-      {
-        title: 'Customers and sales',
-        body: 'Retention, loyalty and consultative selling in telecom and finance. I understand the problems software has to solve because I have faced them with customers.',
-      },
-    ],
+  route: {
+    heading: 'Route',
+    intro: 'Every job and study, newest first.',
+    present: 'Now',
+    planned: 'Under construction',
+    more: 'Details',
   },
-  experience: {
-    heading: 'Experience',
-    techGroup: 'Software and IT',
-    businessGroup: 'Sales and customer experience',
-    tech: [
-      {
-        title: 'Web Layout Developer',
-        org: 'Konecta · Páginas Amarillas',
-        period: 'Feb 2025 – Nov 2025',
-        summary:
-          'Migrated client websites between layout platforms, with the technical and visual adjustments needed to keep them rendering and working correctly. Coordinated with design and development teams to meet standards and deadlines.',
-      },
-      {
-        title: 'Full Stack Developer',
-        org: 'Fundecompe',
-        period: 'Aug 2023 – Apr 2024',
-        summary:
-          'Led the design, development and maintenance of scalable web applications across the full project lifecycle. Led the team implementing React, Node.js, Express, PostgreSQL and AWS with agile practices.',
-      },
-      {
-        title: 'IT Support and Projects Technician',
-        org: 'Self-employed',
-        period: 'Jan 2020 – Present',
-        summary:
-          'Install, configure and maintain computers, software licences, CCTV and IP cameras and local networks for small businesses. Advise on hardware and software purchases and run small IT projects from planning to after-sales support.',
-      },
-    ] satisfies Role[],
-    business: [
-      {
-        title: 'Sales Advisor',
-        org: 'Movistar (Tigo)',
-        period: 'Aug 2026 – Present',
-        summary:
-          'Sales, retention, loyalty and win-back of telecom customers: identifying needs, offering the right services and contributing to commercial targets.',
-      },
-      {
-        title: 'Financial Accounts Agent',
-        org: 'Gmor IT Solution',
-        period: 'Dec 2025 – Aug 2026',
-        summary:
-          'Consultative selling and personalised advice for investors through specialised brokers, from first contact to onboarding.',
-      },
-      {
-        title: 'Sales Advisor, Colombian market',
-        org: 'Adecco',
-        period: 'Oct 2024 – Jan 2025',
-        summary: 'Full sales cycle by phone, from prospecting to closing, to meet monthly targets.',
-      },
-      {
-        title: 'Customer Service and Sales Advisor, Chilean market',
-        org: 'PeopleBPO',
-        period: 'May 2024 – Oct 2024',
-        summary:
-          'Resolved customer requests by phone, email and chat, logged incidents and provided technical support, then moved to outbound sales for Chilean customers.',
-      },
-    ] satisfies Role[],
-  },
-  education: {
-    heading: 'Education',
-    items: [
-      { title: 'Specialization in Data Analytics', org: 'Universidad EAM', period: '2025 – Present' },
-      { title: 'Software Engineering', org: 'Universidad EAM', period: '2023 – 2026' },
-      { title: 'Software Development Technologist', org: 'Universidad EAM', period: '2021 – 2023' },
-      {
-        title: 'Information Systems Analysis and Development Technologist',
-        org: 'SENA',
-        period: '2021 – 2022',
-      },
-      { title: 'Software Development Technician', org: 'SENA', period: '2019 – 2020' },
-      { title: 'Intensive English course, C1', org: 'American School Way', period: '2025 – Present' },
-    ] satisfies Study[],
-  },
-  skills: {
-    heading: 'Skills',
+  network: defineNetwork([
+    {
+      id: 'software',
+      name: 'Software',
+      stations: [
+        {
+          kind: 'job',
+          title: 'Web Layout Developer',
+          org: 'Konecta, Páginas Amarillas',
+          period: '2025',
+          detail: 'Migrated client websites between layout platforms, keeping them rendering and working correctly, with design and development teams.',
+        },
+        { kind: 'study', title: 'Software Engineering', org: 'Universidad EAM', period: '2023 – 2026' },
+        {
+          kind: 'job',
+          title: 'Full Stack Developer',
+          org: 'Fundecompe',
+          period: '2023 – 2024',
+          detail: 'Led design, development and maintenance of web applications with React, Node.js, Express, PostgreSQL and AWS, using agile practices.',
+        },
+        { kind: 'study', title: 'Software Development Technologist', org: 'Universidad EAM', period: '2021 – 2023' },
+        { kind: 'study', title: 'Information Systems Technologist', org: 'SENA', period: '2021 – 2022' },
+        {
+          kind: 'job',
+          title: 'IT Support and Projects',
+          org: 'Self-employed',
+          period: '2020 – Now',
+          detail: 'Computers, licences, CCTV and local networks for small businesses, from planning to after-sales support.',
+        },
+        { kind: 'study', title: 'Software Development Technician', org: 'SENA', period: '2019 – 2020' },
+      ],
+    },
+    {
+      id: 'data',
+      name: 'Data',
+      stations: [
+        { kind: 'planned', title: 'AI assistant over internal documents', org: 'Next project', period: '' },
+        { kind: 'planned', title: 'Telecom churn prediction API', org: 'Next project', period: '' },
+        { kind: 'study', title: 'Specialization in Data Analytics', org: 'Universidad EAM', period: '2025 – Now' },
+        { kind: 'study', title: 'English, C1', org: 'American School Way', period: '2025 – Now' },
+      ],
+    },
+    {
+      id: 'sales',
+      name: 'Sales',
+      stations: [
+        {
+          kind: 'job',
+          title: 'Sales Advisor',
+          org: 'Movistar (Tigo)',
+          period: '2026 – Now',
+          detail: 'Sales, retention, loyalty and win-back of telecom customers.',
+        },
+        {
+          kind: 'job',
+          title: 'Financial Accounts Agent',
+          org: 'Gmor IT Solution',
+          period: '2025 – 2026',
+          detail: 'Consultative selling and personalised advice for investors, from first contact to onboarding.',
+        },
+        {
+          kind: 'job',
+          title: 'Sales Advisor, Colombian market',
+          org: 'Adecco',
+          period: '2024 – 2025',
+          detail: 'Full phone sales cycle, from prospecting to closing.',
+        },
+        {
+          kind: 'job',
+          title: 'Customer Service and Sales, Chilean market',
+          org: 'PeopleBPO',
+          period: '2024',
+          detail: 'Support by phone, email and chat, then outbound sales.',
+        },
+      ],
+    },
+  ]),
+  stack: {
+    heading: 'Stack',
     groups: [
       { name: 'Languages', items: ['Java', 'Python', 'TypeScript', 'JavaScript', 'PHP', 'SQL'] },
-      { name: 'Backend', items: ['Spring Boot', 'Node.js', 'Express', 'Django', 'REST APIs', 'Payment gateways'] },
-      { name: 'Frontend', items: ['React', 'HTML5', 'CSS3', 'Tailwind CSS', 'Bootstrap', 'Prototyping'] },
-      { name: 'Data', items: ['PostgreSQL', 'MySQL', 'MongoDB', 'Power BI', 'Looker Studio', 'Excel'] },
-      { name: 'Cloud and DevOps', items: ['AWS', 'Docker', 'Kubernetes', 'Linux', 'CI/CD', 'Git and GitHub'] },
-      {
-        name: 'Ways of working',
-        items: ['Software architecture', 'Project management', 'Team leadership', 'Technical documentation', 'Trello and Planner', 'Slack and Teams'],
-      },
+      { name: 'Backend', items: ['Spring Boot', 'Node.js', 'Express', 'Django', 'REST APIs'] },
+      { name: 'Frontend', items: ['React', 'HTML', 'CSS', 'Tailwind CSS', 'Bootstrap'] },
+      { name: 'Data', items: ['PostgreSQL', 'MySQL', 'MongoDB', 'Power BI', 'Looker Studio'] },
+      { name: 'Cloud', items: ['AWS', 'Docker', 'Kubernetes', 'Linux', 'CI/CD', 'GitHub Actions'] },
     ],
-    spoken: 'Spanish (native) and English (C1)',
-    spokenLabel: 'Spoken languages',
   },
   contact: {
-    heading: "Let's work together",
-    body: 'Looking for a developer who understands both the code and the customer? Message me on LinkedIn or download my CV.',
+    heading: 'Next stop: your team',
+    body: 'A developer who understands the code and the customer. Message me or take the CV.',
     linkedin: 'Message me on LinkedIn',
-    github: 'See my GitHub',
     cv: 'Download CV (PDF)',
+    github: 'GitHub',
   },
   footer: {
-    built: 'Built with Astro and deployed on GitHub Pages.',
+    built: 'Built with Astro, GSAP and Lenis.',
     source: 'Source code',
   },
 }
@@ -207,8 +195,8 @@ const es: Content = {
   nav: {
     skip: 'Saltar al contenido',
     project: 'Proyecto',
-    experience: 'Experiencia',
-    skills: 'Habilidades',
+    route: 'Recorrido',
+    stack: 'Stack',
     contact: 'Contacto',
     language: 'Idioma',
     theme: 'Tema',
@@ -216,157 +204,138 @@ const es: Content = {
     dark: 'Oscuro',
     menu: 'Secciones',
   },
+  lines: { software: 'Software', data: 'Datos', sales: 'Comercial' },
   hero: {
-    role: 'Ingeniero de Software · Full Stack · Datos e IA',
-    title: 'Construyo productos web de principio a fin, pensando en quienes los usan.',
-    intro:
-      'Soy ingeniero de software colombiano, trabajo con Java, Python y TypeScript y estoy terminando una especialización en analítica de datos. Mis años en ventas y retención de clientes me enseñaron a construir para usuarios reales y resultados medibles.',
-    availability: 'Abierto a trabajo remoto y oportunidades en España',
-    location: 'Calarcá, Colombia',
-    english: 'Inglés C1',
-    ctaProject: 'Ver mi trabajo',
+    role: 'Ingeniero de software, web full stack, datos e IA',
+    pitch: 'Construyo productos web de principio a fin, y conozco el lado del cliente por mis años en ventas.',
+    terminus: 'Remoto o España',
+    terminusLabel: 'Destino',
+    facts: ['Calarcá, Colombia', 'Inglés C1'],
+    ctaProject: 'Ver el proyecto',
+    ctaLinkedin: 'LinkedIn',
     ctaCv: 'Descargar CV',
     photoAlt: 'Retrato de Daniel Pachón con traje oscuro',
+    mapLabel: 'Mapa de carrera: las líneas Software, Datos y Comercial se cruzan en Daniel Pachón y siguen hacia trabajo remoto o España.',
   },
   project: {
-    heading: 'Proyecto destacado',
-    name: 'Task Manager',
+    heading: 'Task Manager',
     tagline: 'Una app Kanban full stack, de la base de datos al despliegue.',
-    body: 'Un tablero de tareas donde las personas se registran, anotan su trabajo y lo arrastran de por hacer a hecho. Diseñé y construí ambas partes: una API REST con autenticación y una interfaz en React, cada una con sus tests, su pipeline de CI y su despliegue en vivo.',
-    highlights: [
-      'API REST en Node.js y TypeScript con autenticación JWT, reglas de propiedad, filtros, ordenamiento y paginación sobre PostgreSQL',
-      'Interfaz en React con arrastrar y soltar, actualizaciones optimistas, inglés y español, y tema claro y oscuro',
-      '45 tests automatizados entre la API (contra una base de datos real) y la interfaz, ejecutados por GitHub Actions en cada push',
-      'API en Docker y frontend estático en Render, desplegados con Blueprints (infraestructura como código) y base de datos PostgreSQL en Neon',
+    facts: [
+      'API REST en Node.js y TypeScript con autenticación JWT sobre PostgreSQL',
+      'Tablero en React con arrastrar y soltar, inglés y español, claro y oscuro',
+      '45 tests automatizados, CI en GitHub Actions, Docker, desplegado en Render y Neon',
     ],
-    stackLabel: 'Construido con',
-    stack: ['React', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Docker', 'GitHub Actions'],
     demo: 'Abrir demo en vivo',
     codeWeb: 'Código del frontend',
     codeApi: 'Código de la API',
-    docs: 'Documentación de la API',
-    imageAlt: 'Tablero de Task Manager en español con tareas en las columnas Por hacer, En progreso y Hecho',
-    otherImageAlt: 'El mismo tablero en inglés con el tema claro',
-    showcaseFirst: 'Español, tema oscuro',
-    showcaseSecond: 'Inglés, tema claro',
-    note: 'Alojado en un plan gratuito: la primera petición puede tardar hasta un minuto mientras el servidor se activa.',
-    next: 'Lo siguiente en mi ruta: un modelo de predicción de abandono de clientes en telecomunicaciones servido por una API, y un asistente de IA que responde a partir de documentos internos.',
+    docs: 'Docs de la API',
+    imageAltLight: 'Tablero de Task Manager en inglés con el tema claro, tareas en Por hacer, En progreso y Hecho',
+    imageAltDark: 'Tablero de Task Manager en español con el tema oscuro',
+    note: 'Alojamiento gratuito: la primera carga puede tardar hasta un minuto.',
   },
-  strengths: {
-    heading: 'Donde la ingeniería se une con el negocio',
-    intro: 'Tres disciplinas que aporto a un equipo, cada una respaldada por trabajo real.',
-    items: [
-      {
-        title: 'Ingeniería de software',
-        body: 'Aplicaciones web full stack y APIs RESTful con React, Node.js, Spring Boot y Django. Me importan una arquitectura clara, los tests automatizados y el CI/CD.',
-      },
-      {
-        title: 'Analítica de datos',
-        body: 'Especialización en Analítica de Datos en la Universidad EAM. SQL, Python y Power BI para convertir datos en decisiones, con foco en el comportamiento de los clientes.',
-      },
-      {
-        title: 'Clientes y ventas',
-        body: 'Retención, fidelización y venta consultiva en telecomunicaciones y finanzas. Entiendo los problemas que el software debe resolver porque los he vivido con clientes.',
-      },
-    ],
+  route: {
+    heading: 'Recorrido',
+    intro: 'Cada trabajo y estudio, del más reciente al más antiguo.',
+    present: 'Hoy',
+    planned: 'En construcción',
+    more: 'Detalles',
   },
-  experience: {
-    heading: 'Experiencia',
-    techGroup: 'Software y TI',
-    businessGroup: 'Ventas y experiencia del cliente',
-    tech: [
-      {
-        title: 'Maquetador Web',
-        org: 'Konecta · Páginas Amarillas',
-        period: 'Feb 2025 – Nov 2025',
-        summary:
-          'Migración de sitios web de clientes entre plataformas de maquetación, con los ajustes técnicos y estéticos necesarios para su correcta visualización y funcionamiento. Coordinación con equipos de diseño y desarrollo para cumplir estándares y entregas.',
-      },
-      {
-        title: 'Desarrollador Full Stack',
-        org: 'Fundecompe',
-        period: 'Ago 2023 – Abr 2024',
-        summary:
-          'Lideré el diseño, desarrollo y mantenimiento de aplicaciones web escalables durante todo el ciclo del proyecto. Dirigí al equipo en la implementación de React, Node.js, Express, PostgreSQL y AWS con prácticas ágiles.',
-      },
-      {
-        title: 'Técnico de Soporte y Proyectos TI',
-        org: 'Independiente',
-        period: 'Ene 2020 – Presente',
-        summary:
-          'Instalación, configuración y mantenimiento de equipos, licencias de software, cámaras CCTV e IP y redes locales para pymes. Asesoría en compra de hardware y software, y gestión de pequeños proyectos TI desde la planificación hasta el soporte posventa.',
-      },
-    ],
-    business: [
-      {
-        title: 'Asesor Comercial',
-        org: 'Movistar (Tigo)',
-        period: 'Ago 2026 – Presente',
-        summary:
-          'Ventas, retención, fidelización y recuperación de clientes de telecomunicaciones: identificar necesidades, ofrecer los servicios adecuados y contribuir a las metas comerciales.',
-      },
-      {
-        title: 'Agente de Cuentas Financieras',
-        org: 'Gmor IT Solution',
-        period: 'Dic 2025 – Ago 2026',
-        summary:
-          'Venta consultiva y asesoría personalizada a inversionistas a través de brokers especializados, desde el primer contacto hasta la vinculación.',
-      },
-      {
-        title: 'Asesor de Ventas, mercado colombiano',
-        org: 'Adecco',
-        period: 'Oct 2024 – Ene 2025',
-        summary: 'Ciclo completo de ventas telefónicas, de la prospección al cierre, para cumplir metas mensuales.',
-      },
-      {
-        title: 'Asesor de Servicio al Cliente y Ventas, mercado chileno',
-        org: 'PeopleBPO',
-        period: 'May 2024 – Oct 2024',
-        summary:
-          'Atención de solicitudes por teléfono, correo y chat, registro de incidencias y soporte técnico; luego ventas salientes a clientes chilenos.',
-      },
-    ],
-  },
-  education: {
-    heading: 'Educación',
-    items: [
-      { title: 'Especialización en Analítica de Datos', org: 'Universidad EAM', period: '2025 – Presente' },
-      { title: 'Ingeniería de Software', org: 'Universidad EAM', period: '2023 – 2026' },
-      { title: 'Tecnólogo en Desarrollo de Software', org: 'Universidad EAM', period: '2021 – 2023' },
-      {
-        title: 'Tecnólogo en Análisis y Desarrollo de Sistemas de Información',
-        org: 'SENA',
-        period: '2021 – 2022',
-      },
-      { title: 'Técnico en Desarrollo de Software', org: 'SENA', period: '2019 – 2020' },
-      { title: 'Curso intensivo de inglés, C1', org: 'American School Way', period: '2025 – Presente' },
-    ],
-  },
-  skills: {
-    heading: 'Habilidades',
+  network: defineNetwork([
+    {
+      id: 'software',
+      name: 'Software',
+      stations: [
+        {
+          kind: 'job',
+          title: 'Maquetador Web',
+          org: 'Konecta, Páginas Amarillas',
+          period: '2025',
+          detail: 'Migración de sitios web de clientes entre plataformas de maquetación, con equipos de diseño y desarrollo.',
+        },
+        { kind: 'study', title: 'Ingeniería de Software', org: 'Universidad EAM', period: '2023 – 2026' },
+        {
+          kind: 'job',
+          title: 'Desarrollador Full Stack',
+          org: 'Fundecompe',
+          period: '2023 – 2024',
+          detail: 'Lideré el diseño, desarrollo y mantenimiento de aplicaciones web con React, Node.js, Express, PostgreSQL y AWS, con prácticas ágiles.',
+        },
+        { kind: 'study', title: 'Tecnólogo en Desarrollo de Software', org: 'Universidad EAM', period: '2021 – 2023' },
+        { kind: 'study', title: 'Tecnólogo en Sistemas de Información', org: 'SENA', period: '2021 – 2022' },
+        {
+          kind: 'job',
+          title: 'Soporte y Proyectos TI',
+          org: 'Independiente',
+          period: '2020 – Hoy',
+          detail: 'Equipos, licencias, CCTV y redes locales para pymes, desde la planificación hasta el soporte posventa.',
+        },
+        { kind: 'study', title: 'Técnico en Desarrollo de Software', org: 'SENA', period: '2019 – 2020' },
+      ],
+    },
+    {
+      id: 'data',
+      name: 'Datos',
+      stations: [
+        { kind: 'planned', title: 'Asistente de IA sobre documentos internos', org: 'Próximo proyecto', period: '' },
+        { kind: 'planned', title: 'API de predicción de abandono en telecom', org: 'Próximo proyecto', period: '' },
+        { kind: 'study', title: 'Especialización en Analítica de Datos', org: 'Universidad EAM', period: '2025 – Hoy' },
+        { kind: 'study', title: 'Inglés, C1', org: 'American School Way', period: '2025 – Hoy' },
+      ],
+    },
+    {
+      id: 'sales',
+      name: 'Comercial',
+      stations: [
+        {
+          kind: 'job',
+          title: 'Asesor Comercial',
+          org: 'Movistar (Tigo)',
+          period: '2026 – Hoy',
+          detail: 'Ventas, retención, fidelización y recuperación de clientes de telecomunicaciones.',
+        },
+        {
+          kind: 'job',
+          title: 'Agente de Cuentas Financieras',
+          org: 'Gmor IT Solution',
+          period: '2025 – 2026',
+          detail: 'Venta consultiva y asesoría personalizada a inversionistas, del primer contacto a la vinculación.',
+        },
+        {
+          kind: 'job',
+          title: 'Asesor de Ventas, mercado colombiano',
+          org: 'Adecco',
+          period: '2024 – 2025',
+          detail: 'Ciclo completo de ventas telefónicas, de la prospección al cierre.',
+        },
+        {
+          kind: 'job',
+          title: 'Servicio al Cliente y Ventas, mercado chileno',
+          org: 'PeopleBPO',
+          period: '2024',
+          detail: 'Atención por teléfono, correo y chat; luego ventas salientes.',
+        },
+      ],
+    },
+  ]),
+  stack: {
+    heading: 'Stack',
     groups: [
       { name: 'Lenguajes', items: ['Java', 'Python', 'TypeScript', 'JavaScript', 'PHP', 'SQL'] },
-      { name: 'Backend', items: ['Spring Boot', 'Node.js', 'Express', 'Django', 'APIs REST', 'Pasarelas de pago'] },
-      { name: 'Frontend', items: ['React', 'HTML5', 'CSS3', 'Tailwind CSS', 'Bootstrap', 'Prototipado'] },
-      { name: 'Datos', items: ['PostgreSQL', 'MySQL', 'MongoDB', 'Power BI', 'Looker Studio', 'Excel'] },
-      { name: 'Cloud y DevOps', items: ['AWS', 'Docker', 'Kubernetes', 'Linux', 'CI/CD', 'Git y GitHub'] },
-      {
-        name: 'Forma de trabajo',
-        items: ['Arquitectura de software', 'Gestión de proyectos', 'Liderazgo de equipos', 'Documentación técnica', 'Trello y Planner', 'Slack y Teams'],
-      },
+      { name: 'Backend', items: ['Spring Boot', 'Node.js', 'Express', 'Django', 'APIs REST'] },
+      { name: 'Frontend', items: ['React', 'HTML', 'CSS', 'Tailwind CSS', 'Bootstrap'] },
+      { name: 'Datos', items: ['PostgreSQL', 'MySQL', 'MongoDB', 'Power BI', 'Looker Studio'] },
+      { name: 'Cloud', items: ['AWS', 'Docker', 'Kubernetes', 'Linux', 'CI/CD', 'GitHub Actions'] },
     ],
-    spoken: 'Español (nativo) e inglés (C1)',
-    spokenLabel: 'Idiomas',
   },
   contact: {
-    heading: 'Trabajemos juntos',
-    body: '¿Buscas un desarrollador que entienda tanto el código como al cliente? Escríbeme por LinkedIn o descarga mi CV.',
+    heading: 'Próxima parada: tu equipo',
+    body: 'Un desarrollador que entiende el código y al cliente. Escríbeme o llévate el CV.',
     linkedin: 'Escríbeme por LinkedIn',
-    github: 'Ver mi GitHub',
     cv: 'Descargar CV (PDF)',
+    github: 'GitHub',
   },
   footer: {
-    built: 'Hecho con Astro y publicado en GitHub Pages.',
+    built: 'Hecho con Astro, GSAP y Lenis.',
     source: 'Código fuente',
   },
 }

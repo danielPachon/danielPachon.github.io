@@ -5,15 +5,15 @@ import Lenis from 'lenis'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
 
-const EASE_OUT = 'power4.out'
-const HEADER_OFFSET = -72
+const EASE_OUT = 'expo.out'
+const HEADER_OFFSET = -80
 const INTRO_KEY = 'dp.intro-seen'
 
 const root = document.documentElement
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /** Smooth scrolling, kept in lockstep with ScrollTrigger. Off for reduced motion. */
-function setupSmoothScroll() {
+const setupSmoothScroll = () => {
   if (reduceMotion) return
   const lenis = new Lenis({ anchors: { offset: HEADER_OFFSET }, lerp: 0.12 })
   lenis.on('scroll', ScrollTrigger.update)
@@ -21,8 +21,11 @@ function setupSmoothScroll() {
   gsap.ticker.lagSmoothing(0)
 }
 
-/** One orchestrated entrance, played once per browser session. */
-function playIntro() {
+/**
+ * The one authored moment, played once per browser session: the three lines run in from the
+ * left, bend into a bundle, meet at the portrait interchange and continue to the terminus.
+ */
+const playIntro = () => {
   if (!root.classList.contains('intro-pending')) return
   try {
     sessionStorage.setItem(INTRO_KEY, '1')
@@ -31,76 +34,62 @@ function playIntro() {
   }
 
   document.fonts.ready.then(() => {
-    const title = document.querySelector<HTMLElement>('.hero h1')
-    const split = title ? new SplitText(title, { type: 'lines', mask: 'lines' }) : null
-    root.classList.remove('intro-pending')
+    const name = document.querySelector<HTMLElement>('.hero__name')
+    const split = name ? new SplitText(name, { type: 'chars', mask: 'chars' }) : null
+    const stacked = window.matchMedia('(max-width: 820px)').matches
 
     const tl = gsap.timeline({ defaults: { ease: EASE_OUT } })
-    tl.from('.hero__frame', { clipPath: 'inset(100% 0% 0% 0% round 24px)', duration: 1.1 }, 0)
-      .from('.hero__photo img', { scale: 1.15, duration: 1.4 }, 0)
-      .from('.hero__mark', { scale: 0.9, opacity: 0, duration: 0.5 }, 0.5)
-      .from('.hero__mark i', { scaleY: 0, transformOrigin: 'bottom', duration: 0.7, stagger: 0.1 }, 0.6)
-      .from(['.hero__name', '.hero__role'], { y: 14, opacity: 0, duration: 0.6, stagger: 0.06 }, 0.1)
+    tl.from('.route', { scaleX: 0, duration: 0.9, stagger: 0.08 }, 0)
+      .from('.route__badge', { opacity: 0, x: -8, duration: 0.4, stagger: 0.08 }, 0.35)
+      .fromTo('.bend__path', { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.35, ease: 'power2.out', stagger: 0.04 }, 0.62)
+      .from('.station', { scale: 0.6, duration: 0.8 }, 0.72)
+      .from('.station', { opacity: 0, duration: 0.18, ease: 'power1.out' }, 0.72)
+      .from('.station__photo', { scale: 1.25, duration: 1.1 }, 0.78)
+      .from('.bundle--hero', { scaleX: 0, duration: 0.9 }, 0.9)
+      .from('.terminus', { opacity: 0, x: -10, duration: 0.5 }, stacked ? 1.5 : 1.3)
+      .from('.hero__meta > *', { opacity: 0, y: 12, duration: 0.6, stagger: 0.06 }, stacked ? 1.25 : 1.15)
 
     if (split) {
-      tl.from(split.lines, { yPercent: 105, duration: 0.9, stagger: 0.09, onComplete: () => split.revert() }, 0.2)
+      tl.from(split.chars, { yPercent: 110, duration: 0.8, stagger: 0.025, onComplete: () => split.revert() }, 1)
     }
 
-    tl.from(['.hero__intro', '.hero__actions', '.hero__facts'], { y: 14, opacity: 0, duration: 0.6, stagger: 0.07 }, 0.65)
+    root.classList.remove('intro-pending')
   })
 }
 
-/**
- * The project screenshot follows the scroll 1:1: as the reader moves through the highlights,
- * the board switches from one language and theme to the other, showing both features.
- */
-function setupShowcase() {
-  const showcase = document.querySelector<HTMLElement>('.showcase')
-  if (!showcase || reduceMotion) return
-
-  const mm = gsap.matchMedia()
-  mm.add('(min-width: 961px)', () => {
-    showcase.classList.add('showcase--animated')
-    gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: '.project__layout',
-          start: 'top 25%',
-          end: 'bottom 70%',
-          scrub: 0.6,
-        },
-      })
-      .to('.showcase__shot--second', { opacity: 1, ease: 'none' }, 0.35)
-      .to('.showcase__label--first', { opacity: 0, y: -6, ease: 'none' }, 0.35)
-      .fromTo('.showcase__label--second', { opacity: 0, y: 6 }, { opacity: 1, y: 0, ease: 'none' }, 0.4)
-      .fromTo('.showcase__progress', { scaleX: 0 }, { scaleX: 1, ease: 'none' }, 0)
-
-    return () => showcase.classList.remove('showcase--animated')
-  })
-}
-
-/** The experience rail draws itself with the scroll, and each role lights up as it is reached. */
-function setupTimeline() {
+/** Each strip map fills with the scroll, and its stops light up as the line reaches them. */
+const setupStrips = () => {
   if (reduceMotion) return
-  document.querySelectorAll<HTMLElement>('.timeline').forEach((timeline) => {
-    timeline.classList.add('timeline--animated')
+  document.querySelectorAll<HTMLElement>('.route-map .strip').forEach((strip) => {
+    strip.classList.add('strip--animated')
     gsap.fromTo(
-      timeline.querySelector('.timeline__progress'),
+      strip.querySelector('.strip__progress'),
       { scaleY: 0 },
       {
         scaleY: 1,
         ease: 'none',
-        scrollTrigger: { trigger: timeline, start: 'top 65%', end: 'bottom 65%', scrub: 0.4 },
+        scrollTrigger: { trigger: strip, start: 'top 72%', end: 'bottom 62%', scrub: 0.4 },
       },
     )
-    timeline.querySelectorAll('.timeline__item').forEach((item) => {
-      ScrollTrigger.create({ trigger: item, start: 'top 65%', toggleClass: 'is-reached' })
+    strip.querySelectorAll('.stop').forEach((stop) => {
+      ScrollTrigger.create({ trigger: stop, start: 'top 68%', toggleClass: 'is-reached' })
     })
   })
 }
 
+/** The contact bundle runs into its terminus when it comes into view. */
+const setupTerminus = () => {
+  if (reduceMotion) return
+  gsap.from('.contact__track .bundle', {
+    scaleX: 0,
+    duration: 1,
+    ease: EASE_OUT,
+    scrollTrigger: { trigger: '.contact', start: 'top 80%', toggleActions: 'play none none none' },
+  })
+}
+
 /** Gives the sticky header a shadow once the page has scrolled. */
-function setupHeader() {
+const setupHeader = () => {
   const header = document.querySelector('.site-header')
   if (!header) return
   ScrollTrigger.create({
@@ -113,6 +102,6 @@ function setupHeader() {
 setupSmoothScroll()
 setupHeader()
 playIntro()
-setupShowcase()
-setupTimeline()
+setupStrips()
+setupTerminus()
 window.addEventListener('load', () => ScrollTrigger.refresh())
